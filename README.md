@@ -2,7 +2,7 @@
 
 ## Run
 
-Change the rom being run in src/glip8.gleam
+Change the rom being run in ``src/glip8.gleam``
 
 ```sh
 git clone https://github.com/anthony-63/glip8 # clone the project
