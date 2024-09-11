@@ -1,8 +1,11 @@
 # glip8
 
+Inspired off of [This Project](https://github.com/QuinnWilton/gleam-chip8)
+
 ## Run
 
 Change the rom being run in ``src/glip8.gleam``
+
 
 ```sh
 git clone https://github.com/anthony-63/glip8 # clone the project
