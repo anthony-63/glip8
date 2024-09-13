@@ -1,5 +1,8 @@
 import gleam/io
-import registers
+import ram.{type Ram}
+import registers.{type RegisterMemory}
+import screen.{type Screen}
+import stack.{type Stack}
 
 pub const rom_path = "roms/test_opcode.ch8"
 
@@ -21,10 +24,19 @@ pub type ROM =
   BitArray
 
 pub type Chip8 {
-  Chip8(state: State, registers: registers.RegisterMemory)
+  Chip8(
+    state: State,
+    registers: RegisterMemory,
+    ram: Ram,
+    pc: Int,
+    stack: Stack,
+    screen: Screen,
+  )
 }
 
 pub fn main() {
+  let screen = screen.new(64, 32) |> screen.toggle_pixel(4, 10)
+  screen |> screen.render()
   // paint.display_on_canvas(
   //   fn(config) -> paint.Picture {
   //     paint.combine([
