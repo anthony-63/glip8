@@ -60,9 +60,8 @@ pub fn render(screen: Screen) {
           paint.rectangle(pixel_width, pixel_height)
           |> paint.fill(
             paint.colour_hex(case v {
-              OnPixel -> "ffffff"
               OffPixel -> "000000"
-              DecayingPixel(_) -> "ffffff"
+              _ -> "ffffff"
             }),
           )
           |> paint.translate_xy(
