@@ -37,6 +37,7 @@ pub type Instruction {
   RegToSoundTimer(reg: DataRegister)
   WaitForkKeySetReg(reg: DataRegister)
   Unknown(op: BitArray)
+  Test
 }
 
 pub fn decode(op: BitArray) -> Instruction {
@@ -86,16 +87,16 @@ pub fn decode(op: BitArray) -> Instruction {
     <<0xe, x:4, 0x9e:8>> -> SkipIfKeyPressed(registers.to_data_register(x))
     <<0xe, x:4, 0xa1:8>> -> SkipIfKeyNotPressed(registers.to_data_register(x))
     <<0xf, x:4, 0x07:8>> -> DelayTimerToReg(registers.to_data_register(x))
-    <<0xf, x:4, 0x15>> -> WaitForkKeySetReg(registers.to_data_register(x))
-    <<0xf, x:4, 0x15>> -> RegToDelayTimer(registers.to_data_register(x))
-    <<0xf, x:4, 0x18>> -> RegToSoundTimer(registers.to_data_register(x))
-    <<0xf, x:4, 0x1e>> -> AddIReg(registers.to_data_register(x))
-    <<0xf, x:4, 0x29>> -> SetISpriteDigit(registers.to_data_register(x))
-    <<0xf, x:4, 0x33>> -> RegToBCD(registers.to_data_register(x))
-    <<0xf, x:4, 0x55>> ->
+    <<0xf, x:4, 0x15:8>> -> WaitForkKeySetReg(registers.to_data_register(x))
+    <<0xf, x:4, 0x15:8>> -> RegToDelayTimer(registers.to_data_register(x))
+    <<0xf, x:4, 0x18:8>> -> RegToSoundTimer(registers.to_data_register(x))
+    <<0xf, x:4, 0x1e:8>> -> AddIReg(registers.to_data_register(x))
+    <<0xf, x:4, 0x29:8>> -> SetISpriteDigit(registers.to_data_register(x))
+    <<0xf, x:4, 0x33:8>> -> RegToBCD(registers.to_data_register(x))
+    <<0xf, x:4, 0x55:8>> ->
       StoreRegistersMemRecurse(registers.to_data_register(x))
-    <<0xf, x:4, 0x65>> -> ReadRegistersMemRecurse(registers.to_data_register(x))
-
+    <<0xf, x:4, 0x65:8>> ->
+      ReadRegistersMemRecurse(registers.to_data_register(x))
     _ -> Unknown(op)
   }
 }

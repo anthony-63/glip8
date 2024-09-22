@@ -1,3 +1,4 @@
+import gleam/io
 import isa
 import ram.{type Ram}
 import registers.{type RegisterMemory}
@@ -43,7 +44,7 @@ pub fn new_chip8() -> Chip8 {
     state: Running,
     registers: registers.new(),
     ram: ram.new(4096 * 8),
-    pc: 0,
+    pc: 0x200,
     stack: stack.new(),
     screen: screen.new(64, 32) |> screen.toggle_pixel(0, 0),
   )
@@ -61,13 +62,14 @@ pub fn load_rom(emulator: Chip8) -> Chip8 {
 }
 
 pub fn exec(emulator: Chip8) -> Chip8 {
-  let assert Ok(inst_bits) = emulator.ram |> ram.read(emulator.pc, 16)
+  let assert Ok(inst_bits) = emulator.ram |> ram.read(emulator.pc, 2)
   let instruction = isa.decode(inst_bits)
-
+  io.debug(instruction)
   case instruction {
     isa.AddByteToReg(reg, data) -> {
       Chip8(
         ..emulator,
+        pc: emulator.pc + 2,
         registers: emulator.registers
           |> registers.set_data_register(
             reg,
@@ -75,12 +77,12 @@ pub fn exec(emulator: Chip8) -> Chip8 {
           ),
       )
     }
-    _ -> emulator
+    _ -> Chip8(..emulator, pc: emulator.pc + 2)
   }
 }
 
 pub fn step(emulator: Chip8) -> Chip8 {
-  let new_emulator = emulator
+  let new_emulator = emulator |> exec
   //Chip8(..emulator)
 
   new_emulator.screen |> screen.render()
