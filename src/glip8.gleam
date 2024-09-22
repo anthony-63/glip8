@@ -1,3 +1,4 @@
+import isa
 import ram.{type Ram}
 import registers.{type RegisterMemory}
 import screen.{type Screen}
@@ -45,6 +46,25 @@ pub fn new_chip8() -> Chip8 {
     stack: stack.new(),
     screen: screen.new(64, 32) |> screen.toggle_pixel(0, 0),
   )
+}
+
+pub fn exec(emulator: Chip8) -> Chip8 {
+  let assert Ok(inst_bits) = emulator.ram |> ram.read(emulator.pc, 16)
+  let instruction = isa.decode(inst_bits)
+
+  case instruction {
+    isa.AddByteToReg(reg, data) -> {
+      Chip8(
+        ..emulator,
+        registers: emulator.registers
+          |> registers.set_data_register(
+            reg,
+            { emulator.registers |> registers.get_data_register(reg) } + data,
+          ),
+      )
+    }
+    _ -> emulator
+  }
 }
 
 pub fn step(emulator: Chip8) -> Chip8 {
