@@ -32,4 +32,4 @@ setInterval(() => {
     if(window.destroyed) process.exit(0)
     let new_emu = step(chip8)
     chip8 = new_emu
-}, 1)
+}, 0)
