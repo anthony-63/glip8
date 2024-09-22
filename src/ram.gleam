@@ -1,4 +1,5 @@
 import gleam/bit_array
+import gleam/io
 
 pub opaque type Ram {
   Ram(data: BitArray)
@@ -13,7 +14,7 @@ pub fn set(ram: Ram, address: Int, data: BitArray) -> Ram {
 
   let assert Ok(left) =
     ram.data
-    |> bit_array.slice(address, data_size)
+    |> bit_array.slice(0, address)
 
   let assert Ok(right) =
     ram.data

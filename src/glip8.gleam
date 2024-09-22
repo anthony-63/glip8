@@ -2,6 +2,7 @@ import isa
 import ram.{type Ram}
 import registers.{type RegisterMemory}
 import screen.{type Screen}
+import simplifile
 import stack.{type Stack}
 
 @external(javascript, "C:/Users/antho/Documents/Code/Gleam/glip8/index.js", "render_window")
@@ -41,11 +42,22 @@ pub fn new_chip8() -> Chip8 {
   Chip8(
     state: Running,
     registers: registers.new(),
-    ram: ram.new(4096),
+    ram: ram.new(4096 * 8),
     pc: 0,
     stack: stack.new(),
     screen: screen.new(64, 32) |> screen.toggle_pixel(0, 0),
   )
+  |> load_font
+  |> load_rom
+}
+
+pub fn load_font(emulator: Chip8) -> Chip8 {
+  Chip8(..emulator, ram: emulator.ram |> ram.set(0, font_memory))
+}
+
+pub fn load_rom(emulator: Chip8) -> Chip8 {
+  let assert Ok(data) = simplifile.read_bits(rom_path)
+  Chip8(..emulator, ram: emulator.ram |> ram.set(0x200, data))
 }
 
 pub fn exec(emulator: Chip8) -> Chip8 {
