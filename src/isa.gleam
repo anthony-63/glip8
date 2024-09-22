@@ -28,14 +28,14 @@ pub type Instruction {
   StoreRegistersMemRecurse(end: DataRegister)
   ReadRegistersMemRecurse(end: DataRegister)
   JumpAddressAddV0(addr: Int)
-  RandomAnd(reg: DataRegister)
+  RandomAnd(reg: DataRegister, to_and: Int)
   Draw(x: DataRegister, y: DataRegister, addr: Int)
   SkipIfKeyPressed(reg: DataRegister)
   SkipIfKeyNotPressed(reg: DataRegister)
   DelayTimerToReg(reg: DataRegister)
   RegToDelayTimer(reg: DataRegister)
   RegToSoundTimer(reg: DataRegister)
-  WaitForkKeySetReg(reg: DataRegister, data: Int)
+  WaitForkKeySetReg(reg: DataRegister)
   Unknown(op: BitArray)
 }
 
@@ -57,6 +57,45 @@ pub fn decode(op: BitArray) -> Instruction {
       )
     <<6:4, x:4, kk:8>> -> LoadByteToReg(registers.to_data_register(x), kk)
     <<7:4, x:4, kk:8>> -> AddByteToReg(registers.to_data_register(x), kk)
+    <<8:4, x:4, y:4, 0:4>> ->
+      LoadRegToReg(registers.to_data_register(y), registers.to_data_register(x))
+    <<8:4, x:4, y:4, 1:4>> ->
+      OrRegReg(registers.to_data_register(x), registers.to_data_register(y))
+    <<8:4, x:4, y:4, 2:4>> ->
+      AndRegReg(registers.to_data_register(x), registers.to_data_register(y))
+    <<8:4, x:4, y:4, 3:4>> ->
+      XorRegReg(registers.to_data_register(x), registers.to_data_register(y))
+    <<8:4, x:4, y:4, 4:4>> ->
+      AddRegReg(registers.to_data_register(x), registers.to_data_register(y))
+    <<8:4, x:4, y:4, 5:4>> ->
+      SubRegReg(registers.to_data_register(x), registers.to_data_register(y))
+    <<8:4, x:4, _:4, 6:4>> -> ShrReg(registers.to_data_register(x))
+    <<8:4, x:4, y:4, 7:4>> ->
+      SubInvRegReg(registers.to_data_register(x), registers.to_data_register(y))
+    <<8:4, x:4, _:4, 0xE:4>> -> ShlReg(registers.to_data_register(x))
+    <<9:4, x:4, y:4, 0:4>> ->
+      SkipInstructionNeqRegReg(
+        registers.to_data_register(x),
+        registers.to_data_register(y),
+      )
+    <<0xa:4, nnn:12>> -> SeTI(nnn)
+    <<0xb:4, nnn:12>> -> JumpAddressAddV0(nnn)
+    <<0xc:4, x:4, kk:8>> -> RandomAnd(registers.to_data_register(x), kk)
+    <<0xd:4, x:4, y:4, n:4>> ->
+      Draw(registers.to_data_register(x), registers.to_data_register(y), n)
+    <<0xe, x:4, 0x9e:8>> -> SkipIfKeyPressed(registers.to_data_register(x))
+    <<0xe, x:4, 0xa1:8>> -> SkipIfKeyNotPressed(registers.to_data_register(x))
+    <<0xf, x:4, 0x07:8>> -> DelayTimerToReg(registers.to_data_register(x))
+    <<0xf, x:4, 0x15>> -> WaitForkKeySetReg(registers.to_data_register(x))
+    <<0xf, x:4, 0x15>> -> RegToDelayTimer(registers.to_data_register(x))
+    <<0xf, x:4, 0x18>> -> RegToSoundTimer(registers.to_data_register(x))
+    <<0xf, x:4, 0x1e>> -> AddIReg(registers.to_data_register(x))
+    <<0xf, x:4, 0x29>> -> SetISpriteDigit(registers.to_data_register(x))
+    <<0xf, x:4, 0x33>> -> RegToBCD(registers.to_data_register(x))
+    <<0xf, x:4, 0x55>> ->
+      StoreRegistersMemRecurse(registers.to_data_register(x))
+    <<0xf, x:4, 0x65>> -> ReadRegistersMemRecurse(registers.to_data_register(x))
+
     _ -> Unknown(op)
   }
 }
