@@ -1,0 +1,11 @@
+{
+  "name": "glip8",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@kmamal/sdl": "^0.10.7"
+  }
+}

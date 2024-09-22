@@ -1,7 +1,14 @@
 import gleam/dict.{type Dict}
 import gleam/int
 import gleam/list
-import paint
+
+@external(javascript, "C:/Users/antho/Documents/Code/Gleam/glip8/index.js", "draw_pixel")
+pub fn draw_pixel(
+  screen_width: Float,
+  screen_height: Float,
+  x: Float,
+  y: Float,
+) -> Nil
 
 pub type Vmem =
   Dict(#(Int, Int), ScreenPixel)
@@ -50,28 +57,17 @@ pub fn set_pixel(screen: Screen, x: Int, y: Int, pixel: ScreenPixel) -> Screen {
 }
 
 pub fn render(screen: Screen) {
-  paint.display_on_canvas(
-    fn(config) -> paint.Picture {
-      let pixel_width = config.width /. int.to_float(screen.width)
-      let pixel_height = config.height /. int.to_float(screen.height)
-      paint.combine(
-        screen.vmem
-        |> dict.map_values(fn(k, v) {
-          paint.rectangle(pixel_width, pixel_height)
-          |> paint.fill(
-            paint.colour_hex(case v {
-              OffPixel -> "000000"
-              _ -> "ffffff"
-            }),
-          )
-          |> paint.translate_xy(
-            int.to_float(k.0) *. pixel_width,
-            int.to_float(k.1) *. pixel_height,
-          )
-        })
-        |> dict.values,
-      )
-    },
-    "canvas",
-  )
+  screen.vmem
+  |> dict.map_values(fn(k, v) {
+    case v {
+      OnPixel | DecayingPixel(_) ->
+        draw_pixel(
+          int.to_float(screen.width),
+          int.to_float(screen.height),
+          int.to_float(k.0),
+          int.to_float(k.1),
+        )
+      OffPixel -> Nil
+    }
+  })
 }

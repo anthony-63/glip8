@@ -1,8 +1,10 @@
-import gleam/io
 import ram.{type Ram}
 import registers.{type RegisterMemory}
 import screen.{type Screen}
 import stack.{type Stack}
+
+@external(javascript, "C:/Users/antho/Documents/Code/Gleam/glip8/index.js", "render_window")
+pub fn render_window() -> Float
 
 pub const rom_path = "roms/test_opcode.ch8"
 
@@ -34,21 +36,22 @@ pub type Chip8 {
   )
 }
 
-pub fn main() {
-  let screen = screen.new(64, 32) |> screen.toggle_pixel(4, 10)
-  screen |> screen.render()
-  // paint.display_on_canvas(
-  //   fn(config) -> paint.Picture {
-  //     paint.combine([
-  //       paint.rectangle(200.0, 200.0)
-  //       |> paint.translate_xy(
-  //         config.width /. 2.0 -. 100.0,
-  //         config.height /. 2.0 -. 100.0,
-  //       )
-  //       |> paint.fill(paint.colour_hex("ffffff")),
-  //     ])
-  //   },
-  //   "canvas",
-  // )
-  io.println("Hello from asd!")
+pub fn new_chip8() -> Chip8 {
+  Chip8(
+    state: Running,
+    registers: registers.new(),
+    ram: ram.new(4096),
+    pc: 0,
+    stack: stack.new(),
+    screen: screen.new(64, 32) |> screen.toggle_pixel(63, 31),
+  )
+}
+
+pub fn step(emulator: Chip8) -> Chip8 {
+  let new_emulator = emulator
+  //Chip8(..emulator)
+
+  new_emulator.screen |> screen.render()
+  render_window()
+  new_emulator
 }
