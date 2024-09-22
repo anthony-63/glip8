@@ -28,11 +28,8 @@ export function draw_pixel(vsw, vsh, xscaled, yscaled) {
 
 let chip8 = new_chip8()
 
-let timer = setInterval(() => {
-    if(window.destroyed) {
-        clearInterval(timer)
-        process.exit(0)
-    }
+setInterval(() => {
+    if(window.destroyed) process.exit(0)
     let new_emu = step(chip8)
     chip8 = new_emu
 }, 1)
