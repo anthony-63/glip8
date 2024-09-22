@@ -43,7 +43,7 @@ pub fn new_chip8() -> Chip8 {
     ram: ram.new(4096),
     pc: 0,
     stack: stack.new(),
-    screen: screen.new(64, 32) |> screen.toggle_pixel(63, 31),
+    screen: screen.new(64, 32) |> screen.toggle_pixel(0, 0),
   )
 }
 

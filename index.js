@@ -31,8 +31,8 @@ let chip8 = new_chip8()
 let timer = setInterval(() => {
     if(window.destroyed) {
         clearInterval(timer)
-        return
+        process.exit(0)
     }
     let new_emu = step(chip8)
     chip8 = new_emu
-}, 0)
+}, 1)
